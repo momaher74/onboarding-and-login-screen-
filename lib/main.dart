@@ -2,14 +2,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shopapp/api/Dio.dart';
 import 'package:shopapp/login%20cubit/logincubit.dart';
 import 'package:shopapp/login%20cubit/loginstates.dart';
 import 'package:shopapp/registScreen.dart';
 
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(LoginScreen());
+  runApp(BoardScreen());
   DioHelper.init();
 }
 
@@ -33,7 +35,33 @@ class _LoginScreenState extends State<LoginScreen> {
         builder: (ctx) => BlocProvider<LoginCubit>(
           create: ( BuildContext context)=>LoginCubit(),
           child: BlocConsumer<LoginCubit , LoginStates>(
-            listener: (context ,state){},
+            listener: (context ,state){
+              if(state is SuccessState){
+                if(state.loginModel.status){
+
+                  Fluttertoast.showToast(
+                    msg: state.loginModel.message ,
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity:  ToastGravity.BOTTOM ,
+                    backgroundColor: Colors.green ,
+                  );
+                    print(state.loginModel.data.token);
+                    print(state.loginModel.message);
+
+                }
+                else{print(state.loginModel.message);
+                Fluttertoast.showToast(
+                  msg: state.loginModel.message ,
+                  toastLength: Toast.LENGTH_LONG,
+                  gravity:  ToastGravity.BOTTOM ,
+                  backgroundColor: Colors.red ,
+                );
+
+                }
+
+              }
+
+            },
             builder: (context , state)=>Scaffold(
               appBar: AppBar(),
               body: Center(
@@ -127,17 +155,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               Text(
                                 "Don't have an account",
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 25),
+                                    fontWeight: FontWeight.bold, fontSize: 20),
                               ),
                               SizedBox(
                                 width: 35,
                               ),
-                              TextButton(
-                                  onPressed: () {
-                                    return Navigator.of(ctx).push(MaterialPageRoute(
-                                        builder: (_) =>Scaffold(body:RegisterScreen() )));
-                                  },
-                                  child: Text("Register"))
+                              Expanded(
+                                child: TextButton(
+                                    onPressed: () {
+                                      return Navigator.of(ctx).push(MaterialPageRoute(
+                                          builder: (_) =>Scaffold(body:BoardScreen() )));
+                                    },
+                                    child: Text("Register")),
+                              )
                             ],
                           )
                         ],
