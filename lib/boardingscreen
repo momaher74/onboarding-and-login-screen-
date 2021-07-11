@@ -1,0 +1,121 @@
+import 'package:flutter/material.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'main.dart';
+class BoardingData{
+  final String title ;
+  final String body ;
+  final String path  ;
+
+  BoardingData({@required this.title, @required this.body, @required this.path
+  });
+
+}
+class BoardScreen extends StatefulWidget {
+  @override
+  _BoardScreenState createState() => _BoardScreenState();
+}
+
+class _BoardScreenState extends State<BoardScreen> {
+  PageController myboardcont= PageController();
+
+  bool IsLast = false;
+
+  List boarding = [
+    BoardingData(title: "on boarding title 1", body: "body 1 " , path: "assets/images/sh.jpg"),
+    BoardingData(title: "on boarding title 2", body: "body 2 " , path: "assets/images/shh.jpg"),
+    BoardingData(title: "on boarding title 3", body: "body 3 " , path: "assets/images/shhh.jpg"),
+  ] ;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Builder(
+
+        builder: (ctx)=>Scaffold(
+          appBar: AppBar(title: Text("BoardScreen"),
+            actions: [
+              TextButton(
+                  onPressed: (){
+                      Navigator.of(ctx).pushReplacement(MaterialPageRoute(builder: (context)=>LoginScreen()));
+                  }, child: Text("skip" , style: TextStyle(color: Colors.red  ,fontSize: 20 , fontWeight: FontWeight.bold),))
+            ],
+          ),
+          body: Padding(
+            padding: EdgeInsets.all(30),
+            child: Column(
+              children: [
+                Expanded(
+                  child: PageView.builder(
+                      onPageChanged: (index){
+                        if(index==boarding.length - 1)
+                        {
+                          setState(() {
+                            IsLast=true ;
+                          });
+                        }else{
+                          setState(() {
+                            IsLast =false ;
+                          });
+                        }
+                      },
+                      controller: myboardcont,
+                      itemCount: boarding.length,  itemBuilder: (context , index)=>Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: Image(image:AssetImage('${boarding[index].path}'))),
+                      SizedBox(height: 30,),
+                      Text("${boarding[index].title}" ,style: TextStyle(fontWeight: FontWeight.bold  , fontSize: 25) ,),
+                      SizedBox(height: 30,),
+                      Text("${boarding[index].body}" ,style: TextStyle(fontWeight: FontWeight.bold  , fontSize: 14) ,),
+                      SizedBox(height: 30,),
+
+                    ],
+                  )),
+                ),
+                Row( children: [
+                  
+                  SmoothPageIndicator(controller: myboardcont, count: boarding.length , effect: ExpandingDotsEffect(
+                    dotColor: Colors.grey ,
+                    activeDotColor: Colors.deepOrange,
+                    dotWidth: 12 ,
+                    dotHeight: 12 ,
+                    spacing: 5 ,
+                  ), ) ,
+                  Spacer(),
+                  FloatingActionButton(
+                    backgroundColor: Colors.deepOrange,
+                    onPressed: (){
+                      if(IsLast == true ){
+                         Navigator.push(ctx, MaterialPageRoute(builder: (context)=> LoginScreen() ));
+                      }else{
+                        myboardcont.nextPage(duration: Duration(microseconds: 600), curve:Curves.fastLinearToSlowEaseIn );
+                      }
+                    }
+                    , child: Icon(Icons.arrow_forward),)
+                ], )
+
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget BoardScreenItem(){
+
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: Image(image:AssetImage('assets/images/sh.jpg'))),
+        SizedBox(height: 30,),
+        Text("title" ,style: TextStyle(fontWeight: FontWeight.bold  , fontSize: 25) ,),
+        SizedBox(height: 30,),
+        Text("body" ,style: TextStyle(fontWeight: FontWeight.bold  , fontSize: 14) ,),
+        SizedBox(height: 30,),
+
+      ],
+    );
+  }
+}
